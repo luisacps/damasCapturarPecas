@@ -1,59 +1,57 @@
-const tamanho = 40;
+const tCelula = 40;
 let pecaId = 0;
 let posicaoInicial = 80;
 let posicaoFinal = 81;
-let classe = '';
-let posicaoCaptura = '';
-letjogada = 0;
+let classe ='';
+let localCaptura = '';
+let jogada = 0;
 document.body.append(criarTabuleiro());
 
 function criarTabuleiro() {
-    const tam = 8
+    const tamanho = 8;
     let tabela = document.createElement('table');
 
-    tabela.style.borderStyle = 'solid'
-    tabela.style.borderSpacing = 0
-    tabela.style.margin = 'auto'
+    tabela.style.borderStyle = 'solid';
+    tabela.style.borderSpacing = 0;
+    tabela.style.margin = 'auto';
 
-    for (let i=0; i < tam; i++) {
+    for (let i = 0; i < tamanho; i++) {
         let linha = document.createElement('tr');
         tabela.append(linha);
-        for (let j=0; j < tam; j++) {
+        for (let j = 0; j < tamanho; j++) {
             let celula = document.createElement('td');
-            celula.setAttribute('id',`${j}` + '-' + `${i}`);
+			celula.setAttribute('id',`${j}` + '-' + `${i}`);
             linha.append(celula);
-
-            celula.style.width = `${tamanho}px`;
-            celula.style.height = `${tamanho}px`;
-            
-                pecaId += 1
-
+            celula.style.width = `${tCelula}px`;
+            celula.style.height = `${tCelula}px`;
+			pecaId += 1;
+	
             if (i % 2 == j % 2) {
                 celula.style.backgroundColor = 'black';
-                celula.setAttribute("class","droptarget");
+				celula.setAttribute("class","droptarget");
                 if (i * 8 + j <= 24) {
-                    celula.append(criarPeca('black', pecaId));
+                    celula.append(criarPeca('black',pecaId));
                 } else if (i * 8 + j >= 40) {
-                    celula.append(criarPeca('blue', pecaId));
+                    celula.append(criarPeca('blue',pecaId));
                 }
             } else {
                 celula.style.backgroundColor = 'white';
             }
         }
     };
-    return tabela;
+	
+    return tabela;	
 }
 
-function criarPeca(cor, ide) {
-        let imagem = document.createElement('img');
-
-        imagem.setAttribute('src', `img/${cor}.png`);
-        imagem.setAttribute('width', `${tamanho-4}px`);
-        imagem.setAttribute('height', `${tamanho-4}px`);
-        imagem.setAttribute('draggable','true');
-	    imagem.setAttribute('id', ide);
-	    imagem.setAttribute('class', cor);
-
+function criarPeca(cor,ide) {
+		let imagem = document.createElement('img');
+		imagem.setAttribute('src', `img/${cor}.png`);
+		imagem.setAttribute('width', `${tCelula-4}px`);
+		imagem.setAttribute('height', `${tCelula-4}px`);
+		imagem.setAttribute('draggable','true');
+		imagem.setAttribute('id', ide);
+		imagem.setAttribute('class', cor);
+		
     return imagem;
 }
 
@@ -61,7 +59,7 @@ function dragstart(){
 	document.addEventListener("dragstart", function(event) {
 	  event.dataTransfer.setData("Text", event.target.id);
 	  posicaoInicial = event.path[1].id.toString();
-	  classe = (event.path[0].className);
+	  classe = event.path[0].className;
 	});
 }
 
@@ -84,46 +82,63 @@ function drop(){
 		let c = event.path[0];
 		let t = c.childElementCount;
 		posicaoFinal = event.target.id.toString();
-        let xI = posicaoInicial.substring(0,1);
-        let yI = posicaoInicial.substring(2,3);
-        let xF = posicaoFinal.substring(0,1);
-        let yF = posicaoFinal.substring(2,3);
-
-        if (classe == 'black' && xF < xI) {
-            posicaoCaptura = (parseInt(xI) - 1).toString() + "-" + (parseInt(yI) + 1).toString();
-        }
-        else if (classe == 'black' && xF > xI) {
-            posicaoCaptura = (parseInt(xI) + 1).toString() + "-" + (parseInt(yI) + 1).toString();
-        }
-        else if (classe == 'blue' && xF > xI) {
-            posicaoCaptura = (parseInt(xI) + 1).toString() + "-" + (parseInt(yI) - 1).toString();
-        }
-        else if (classe == 'blue' && xF < xI) {
-            posicaoCaptura = (parseInt(xI) - 1).toString() + "-" + (parseInt(yI) - 1).toString();
-        }
-
-        captura = document.getElementById(posicaoCaptura);
-        if (captura.childElementCount == '1') {
+		let xa = posicaoInicial.substring(0,1);
+		let ya = posicaoInicial.substring(2,3);
+		let xf = posicaoFinal.substring(0,1);
+		let yf = posicaoFinal.substring(2,3);
+		
+		if(classe == 'black' && xf < xa) {
+			localCaptura = (parseInt(xa) - 1).toString() + "-" + (parseInt(ya) + 1).toString();
+		} else if(classe == 'black' && xf > xa) {
+			localCaptura = (parseInt(xa) + 1).toString() + "-" + (parseInt(ya) + 1).toString();
+		} else if(classe == 'blue' && xf > xa){
+			localCaptura = (parseInt(xa) + 1).toString() + "-" + (parseInt(ya) - 1).toString();
+		} else if(classe == 'blue' && xf < xa){
+			localCaptura = (parseInt(xa) - 1).toString() + "-" + (parseInt(ya) - 1).toString();
+		}
+		captura = document.getElementById(localCaptura);
+		if(captura.childElementCount == '1'){
 			classeCapturada = captura.firstElementChild.className;
 			pecaCapturada = captura.firstElementChild;
 		}
-
-        if (t == '0' && yI != yF) {
-            if (classe == 'blue' && yI > yF && yI - yF == 1 && jogada % 2 == 0 || yI - yF == 2 && classeCapturada == "black" && jogada % 2 == 0 ||
-            classe == 'black' && yI < yF && yI - yF == -1 && jogada % 2 == 1 || yI - yF == -2 && classeCapturada == "blue" && jogada % 2 == 1) {
-                event.target.appendChild(document.getElementById(data));
-                jogada += 1;
-                if (yI - yF == 2 || yI - yF == -2) {
-                    pecaCapturada.remove();
-                    pecaCapturada = '';
-                    classeCapturada = '';
-                }
-            }
-        }
+		if (t == '0' && ya != yf){
+			if (classe == 'blue' && ya > yf && ya - yf == 1 && jogada % 2 == 0 || ya - yf == 2 && classeCapturada == "black" && jogada % 2 == 0 || classe == 'black' && ya < yf && ya - yf == -1 && jogada % 2 == 1 || ya - yf == -2 && classeCapturada == "blue" && jogada % 2 == 1) {
+				event.target.appendChild(document.getElementById(data));
+				if (classe == 'blue' && yf == '0' || classe == 'black' && yf == '7'){
+					rainha(classe,yf,xf);
+				}
+				jogada += 1;
+				if(ya - yf == 2 || ya - yf == -2) {
+					pecaCapturada.remove();
+					pecaCapturada = '';
+					classeCapturada = '';
+				}
+			}
+		}
+		
 	}
 	});
 }
-
+function rainha(classe, yf, xf){
+	local = xf + '-' + yf;
+	sub = document.getElementById(local);
+	pe = sub.firstElementChild;
+	addId = pe.id;
+	addClass = pe.className;
+	let imagem = document.createElement('img');
+	if (classe == "blue") {
+		imagem.setAttribute('src', 'img/redKing.jpeg');
+	} else {
+		imagem.setAttribute('src', 'img/blackKing.jpeg');
+	}
+	imagem.setAttribute('width', `${tCelula-4}px`);
+	imagem.setAttribute('height', `${tCelula-4}px`);
+	imagem.setAttribute('draggable','true');
+	imagem.setAttribute('id', addId);
+	imagem.setAttribute('class', `${addClass}King`);
+	pe.remove();
+	sub.append(imagem);
+}
 dragstart();
 dragend();
 dragover();
