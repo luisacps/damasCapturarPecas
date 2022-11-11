@@ -1,13 +1,13 @@
-const tCelula = 40;
+const tamanhoCelula = 40;
 let pecaId = 0;
-let posicaoInicial = 80;
-let posicaoFinal = 81;
+let localAtual = 80;
+let localFuturo = 81;
 let classe ='';
 let localCaptura = '';
 let jogada = 0;
-document.body.append(criarTabuleiro());
+document.body.append(criaTabuleiro());
 
-function criarTabuleiro() {
+function criaTabuleiro() {
     const tamanho = 8;
     let tabela = document.createElement('table');
 
@@ -22,17 +22,17 @@ function criarTabuleiro() {
             let celula = document.createElement('td');
 			celula.setAttribute('id',`${j}` + '-' + `${i}`);
             linha.append(celula);
-            celula.style.width = `${tCelula}px`;
-            celula.style.height = `${tCelula}px`;
+            celula.style.width = `${tamanhoCelula}px`;
+            celula.style.height = `${tamanhoCelula}px`;
 			pecaId += 1;
 	
             if (i % 2 == j % 2) {
                 celula.style.backgroundColor = 'black';
 				celula.setAttribute("class","droptarget");
                 if (i * 8 + j <= 24) {
-                    celula.append(criarPeca('black',pecaId));
+                    celula.append(criaPeca('black',pecaId));
                 } else if (i * 8 + j >= 40) {
-                    celula.append(criarPeca('blue',pecaId));
+                    celula.append(criaPeca('blue',pecaId));
                 }
             } else {
                 celula.style.backgroundColor = 'white';
@@ -43,11 +43,11 @@ function criarTabuleiro() {
     return tabela;	
 }
 
-function criarPeca(cor,ide) {
+function criaPeca(cor,ide) {
 		let imagem = document.createElement('img');
 		imagem.setAttribute('src', `img/${cor}.png`);
-		imagem.setAttribute('width', `${tCelula-4}px`);
-		imagem.setAttribute('height', `${tCelula-4}px`);
+		imagem.setAttribute('width', `${tamanhoCelula-4}px`);
+		imagem.setAttribute('height', `${tamanhoCelula-4}px`);
 		imagem.setAttribute('draggable','true');
 		imagem.setAttribute('id', ide);
 		imagem.setAttribute('class', cor);
@@ -58,7 +58,7 @@ function criarPeca(cor,ide) {
 function dragstart(){
 	document.addEventListener("dragstart", function(event) {
 	  event.dataTransfer.setData("Text", event.target.id);
-	  posicaoInicial = event.path[1].id.toString();
+	  localAtual = event.path[1].id.toString();
 	  classe = event.path[0].className;
 	});
 }
@@ -81,11 +81,11 @@ function drop(){
 		const data = event.dataTransfer.getData("Text");
 		let c = event.path[0];
 		let t = c.childElementCount;
-		posicaoFinal = event.target.id.toString();
-		let xa = posicaoInicial.substring(0,1);
-		let ya = posicaoInicial.substring(2,3);
-		let xf = posicaoFinal.substring(0,1);
-		let yf = posicaoFinal.substring(2,3);
+		localFuturo = event.target.id.toString();
+		let xa = localAtual.substring(0,1);
+		let ya = localAtual.substring(2,3);
+		let xf = localFuturo.substring(0,1);
+		let yf = localFuturo.substring(2,3);
 		
 		if(classe == 'black' && xf < xa) {
 			localCaptura = (parseInt(xa) - 1).toString() + "-" + (parseInt(ya) + 1).toString();
@@ -105,7 +105,7 @@ function drop(){
 			if (classe == 'blue' && ya > yf && ya - yf == 1 && jogada % 2 == 0 || ya - yf == 2 && classeCapturada == "black" && jogada % 2 == 0 || classe == 'black' && ya < yf && ya - yf == -1 && jogada % 2 == 1 || ya - yf == -2 && classeCapturada == "blue" && jogada % 2 == 1) {
 				event.target.appendChild(document.getElementById(data));
 				if (classe == 'blue' && yf == '0' || classe == 'black' && yf == '7'){
-					rainha(classe,yf,xf);
+					pecaRainha(classe,yf,xf);
 				}
 				jogada += 1;
 				if(ya - yf == 2 || ya - yf == -2) {
@@ -119,7 +119,7 @@ function drop(){
 	}
 	});
 }
-function rainha(classe, yf, xf){
+function pecaRainha(classe, yf, xf){
 	local = xf + '-' + yf;
 	sub = document.getElementById(local);
 	pe = sub.firstElementChild;
@@ -131,8 +131,8 @@ function rainha(classe, yf, xf){
 	} else {
 		imagem.setAttribute('src', 'img/blackKing.png');
 	}
-	imagem.setAttribute('width', `${tCelula-4}px`);
-	imagem.setAttribute('height', `${tCelula-4}px`);
+	imagem.setAttribute('width', `${tamanhoCelula-4}px`);
+	imagem.setAttribute('height', `${tamanhoCelula-4}px`);
 	imagem.setAttribute('draggable','true');
 	imagem.setAttribute('id', addId);
 	imagem.setAttribute('class', `${addClass}King`);
