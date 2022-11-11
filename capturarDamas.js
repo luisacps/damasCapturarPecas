@@ -127,9 +127,9 @@ function rainha(classe, yf, xf){
 	addClass = pe.className;
 	let imagem = document.createElement('img');
 	if (classe == "blue") {
-		imagem.setAttribute('src', 'img/redKing.jpeg');
+		imagem.setAttribute('src', 'img/blueKing.png');
 	} else {
-		imagem.setAttribute('src', 'img/blackKing.jpeg');
+		imagem.setAttribute('src', 'img/blackKing.png');
 	}
 	imagem.setAttribute('width', `${tCelula-4}px`);
 	imagem.setAttribute('height', `${tCelula-4}px`);
